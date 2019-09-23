@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://unpkg.com/vue@2.6"></script>
+  </head>
+  <style type="text/css">
+    .red {
+      color: red;
+    }
+  </style>
+  <body>
+    <div id="app">
+      Hello
+      <name-label v-bind:first-name="firstName" v-bind:last-name="lastName"></name-label>!
+      <name-input
+        v-on:name-submitted="setFullName"
+      ></name-input>
+      <name-log
+        v-bind:first-name="firstName"
+        v-bind:last-name="lastName"
+      ></name-log>
+    </div>
+    <script type="text/javascript">
+      var NameInput = {
+        name: 'NameInput',
+        template: `
+          <form v-on:submit.prevent="submit">
+            <input type="text" placeholder="First name" v-model="firstName">
+            <input type="text" placeholder="Last name" v-model="lastName">
+            <button type="submit" v-bind:disabled="!firstName || !lastName">OK</button>
+            <button type="button" v-bind:disabled="!firstName && !lastName" v-on:click="cancel">Cancel</button>
+          </form>
+        `,
+        data: function () {
+          return {
+            firstName: undefined,
+            lastName: undefined
+          }
+        },
+        methods: {
+          submit: function () {
+            this.$emit('name-submitted', {
+              firstName: this.firstName,
+              lastName: this.lastName
+            })
+            this.firstName = undefined
+            this.lastName = undefined
+          },
+          cancel: function () {
+            this.firstName = undefined
+            this.lastName = undefined
+          }
+        }
+      }
+      var NameLabel = {
+        name: 'NameLabel',
+        template: '<span v-bind:class="displayName && \'red\'">{{displayName || "Anonymous"}}</span>',
+        props: {
+          firstName: {type: String, required: false, default: undefined},
+          lastName: {type: String, required: false, default: undefined}
+        },
+        computed: {
+          displayName: function () {
+            if (this.firstName && this.lastName) return this.firstName + ' ' + this.lastName
+            return this.firstName || this.lastName || undefined
+          }
+        }
+      }
+      var NameLog = {
+        name: 'NameLog',
+        template: `
+          <div v-if="hasNames">
+            Previous names:
+            <ul>
+              <li v-for="name in nameLog">{{name}}</li>
+            </ul>
+          </div>
+        `,
+        props: {
+          firstName: {type: String, required: false, default: undefined},
+          lastName: {type: String, required: false, default: undefined}
+        },
+        data: function () {
+          return {
+            nameLog: []
+          }
+        },
+        computed: {
+          displayName: function () {
+            if (this.firstName && this.lastName) return this.firstName + ' ' + this.lastName
+            return this.firstName || this.lastName || undefined
+          },
+          hasNames: function () {
+            return this.nameLog.length > 0
+          }
+        },
+        watch: {
+          displayName: function (displayName) {
+            this.logName(displayName)
+          }
+        },
+        methods: {
+          logName: function (name) {
+            if (name) {
+              this.nameLog.push(name)
+            }
+          }
+        }
+      }
+      var app = new Vue({
+        components: {
+          NameInput: NameInput,
+          NameLabel: NameLabel,
+          NameLog: NameLog
+        },
+        data: {
+          firstName: undefined,
+          lastName: undefined
+        },
+        methods: {
+          setFullName: function (arg) {
+            this.firstName = arg.firstName
+            this.lastName = arg.lastName
+          }
+        }
+      }).$mount('#app')
+    </script>
+  </body>
+</html>

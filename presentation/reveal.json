@@ -1,0 +1,14 @@
+{
+  "width": 1280,
+  "height": 960,
+  "margin": 0.15,
+  "controls": true,
+  "controlsTutorial": false,
+  "controlsLayout": "bottom-right",
+  "slideNumber": true,
+  "hash": true,
+  "history": true,
+  "transition": "slide",
+  "center": false,
+  "pdfSeparateFragments": false
+}
